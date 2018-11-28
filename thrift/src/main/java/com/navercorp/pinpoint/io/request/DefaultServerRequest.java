@@ -17,6 +17,7 @@
 package com.navercorp.pinpoint.io.request;
 
 import com.navercorp.pinpoint.io.header.Header;
+import com.navercorp.pinpoint.io.header.HeaderEntity;
 
 /**
  * @author Woonduk Kang(emeroad)
@@ -46,6 +47,11 @@ public class DefaultServerRequest<T> extends DefaultAttributeMap implements Serv
     }
 
     @Override
+    public HeaderEntity getHeaderEntity() {
+        return message.getHeaderEntity();
+    }
+
+    @Override
     public T getData() {
         return message.getData();
     }
@@ -58,5 +64,10 @@ public class DefaultServerRequest<T> extends DefaultAttributeMap implements Serv
     @Override
     public int getRemotePort() {
         return remotePort;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultServerRequest{" + "message=" + message + ", remoteAddress='" + remoteAddress + '\'' + ", remotePort=" + remotePort + '}';
     }
 }

@@ -20,7 +20,7 @@ QuickStart supports Linux, OSX, and Windows.
 ## Starting 
 Download Pinpoint with `git clone https://github.com/naver/pinpoint.git` or [download](https://github.com/naver/pinpoint/archive/master.zip) the project as a zip file and unzip.
 
-Install Pinpoint by running `./mvnw install -Dmaven.test.skip=true`
+Install Pinpoint by running `./mvnw install -DskipTests=true`
 
 ### Install & Start HBase
 
@@ -49,11 +49,11 @@ The following script downloads HBase standalone from [Apache download site](http
 
 Once the startup scripts are completed, the last 10 lines of the Tomcat log are tailed to the console:
 
-**Collector** ![Collector quick start successful](../doc/img/ss_quickstart-collector-log.png)
+**Collector** ![Collector quick start successful](../doc/images/ss_quickstart-collector-log.png)
 
-**TestApp** ![TestApp quick start successful](../doc/img/ss_quickstart-testapp-log.png)
+**TestApp** ![TestApp quick start successful](../doc/images/ss_quickstart-testapp-log.png)
 
-**Web UI** ![Web quick start successful](../doc/img/ss_quickstart-web-log.png)
+**Web UI** ![Web quick start successful](../doc/images/ss_quickstart-web-log.png)
 
 ### Check Status
 Once HBase and the 3 daemons are running, you may visit the following addresses to test out your very own Pinpoint instance.

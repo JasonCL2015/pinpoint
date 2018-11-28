@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Pinpoint contributors and NAVER Corp.
+ * Copyright 2018 NAVER Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,24 +17,40 @@
 package com.navercorp.pinpoint.plugin.jboss.interceptor;
 
 import com.navercorp.pinpoint.bootstrap.context.MethodDescriptor;
-import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.bootstrap.context.TraceContext;
 import com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor;
 import com.navercorp.pinpoint.bootstrap.logging.PLogger;
 import com.navercorp.pinpoint.bootstrap.logging.PLoggerFactory;
+import com.navercorp.pinpoint.bootstrap.plugin.request.RequestAdaptor;
+import com.navercorp.pinpoint.bootstrap.plugin.request.ServletRequestListenerInterceptorHelper;
+import com.navercorp.pinpoint.bootstrap.plugin.request.util.ParameterRecorder;
+import com.navercorp.pinpoint.bootstrap.plugin.request.util.RemoteAddressResolverFactory;
+import com.navercorp.pinpoint.plugin.common.servlet.util.ArgumentValidator;
+import com.navercorp.pinpoint.plugin.common.servlet.util.HttpServletRequestAdaptor;
+import com.navercorp.pinpoint.plugin.common.servlet.util.ParameterRecorderFactory;
+import com.navercorp.pinpoint.plugin.common.servlet.util.ServletArgumentValidator;
+import com.navercorp.pinpoint.plugin.jboss.JbossConfig;
+import com.navercorp.pinpoint.plugin.jboss.JbossConstants;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * The Class StandardHostValveInvokeInterceptor.
  *
+ * @author <a href="mailto:suraj.raturi89@gmail.com">Suraj Raturi</a>
  * @author emeroad
  * @author jaehong.kim
  */
 public class StandardHostValveInvokeInterceptor implements AroundInterceptor {
     private final PLogger logger = PLoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
+    private final boolean isInfo = logger.isInfoEnabled();
 
     private final MethodDescriptor methodDescriptor;
-    private final TraceContext traceContext;
+    private final ArgumentValidator argumentValidator;
+    private final ServletRequestListenerInterceptorHelper<HttpServletRequest> servletRequestListenerInterceptorHelper;
 
     /**
      * Instantiates a new standard host valve invoke interceptor.
@@ -43,36 +59,74 @@ public class StandardHostValveInvokeInterceptor implements AroundInterceptor {
      * @param descriptor   the descriptor
      */
     public StandardHostValveInvokeInterceptor(final TraceContext traceContext, final MethodDescriptor descriptor) {
-        this.traceContext = traceContext;
         this.methodDescriptor = descriptor;
+        this.argumentValidator = new ServletArgumentValidator(logger, 0, HttpServletRequest.class, 1, HttpServletResponse.class);
+        final JbossConfig config = new JbossConfig(traceContext.getProfilerConfig());
+        RequestAdaptor<HttpServletRequest> requestAdaptor = new HttpServletRequestAdaptor();
+        requestAdaptor = RemoteAddressResolverFactory.wrapRealIpSupport(requestAdaptor, config.getRealIpHeader(), config.getRealIpEmptyValue());
+        ParameterRecorder<HttpServletRequest> parameterRecorder = ParameterRecorderFactory.newParameterRecorderFactory(config.getExcludeProfileMethodFilter(), config.isTraceRequestParam());
+        this.servletRequestListenerInterceptorHelper = new ServletRequestListenerInterceptorHelper<HttpServletRequest>(JbossConstants.JBOSS, traceContext, requestAdaptor, config.getExcludeUrlFilter(), parameterRecorder);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor#before(java.lang.Object, java.lang.Object[])
-     */
     @Override
     public void before(final Object target, final Object[] args) {
+        if (isDebug) {
+            logger.beforeInterceptor(target, args);
+        }
+
+        if (!argumentValidator.validate(args)) {
+            return;
+        }
+
+        try {
+            final HttpServletRequest request = (HttpServletRequest) args[0];
+            if (request.isAsyncStarted() || request.getDispatcherType() == DispatcherType.ASYNC) {
+                if (isDebug) {
+                    logger.debug("Skip async servlet request event. isAsyncStarted={}, dispatcherType={}", request.isAsyncStarted(), request.getDispatcherType());
+                }
+                return;
+            }
+            this.servletRequestListenerInterceptorHelper.initialized(request, JbossConstants.JBOSS_METHOD, this.methodDescriptor);
+        } catch (Throwable t) {
+            if (isInfo) {
+                logger.info("Failed to servlet request event handle.", t);
+            }
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.navercorp.pinpoint.bootstrap.interceptor.AroundInterceptor#after(java.lang.Object, java.lang.Object[],
-     * java.lang.Object, java.lang.Throwable)
-     */
     @Override
     public void after(final Object target, final Object[] args, final Object result, final Throwable throwable) {
         if (isDebug) {
             logger.afterInterceptor(target, args, result, throwable);
         }
 
-        final Trace trace = traceContext.currentRawTraceObject();
-        if (trace == null) {
+        if (!argumentValidator.validate(args)) {
             return;
         }
-        // Only remove bind trace
-        traceContext.removeTraceObject();
+
+        try {
+            final HttpServletRequest request = (HttpServletRequest) args[0];
+            final HttpServletResponse response = (HttpServletResponse) args[1];
+            if (request.getDispatcherType() == DispatcherType.ASYNC) {
+                if (isDebug) {
+                    logger.debug("Skip async servlet request event. isAsyncStarted={}, dispatcherType={}", request.isAsyncStarted(), request.getDispatcherType());
+                }
+                return;
+            }
+            final int statusCode = getStatusCode(response);
+            this.servletRequestListenerInterceptorHelper.destroyed(request, throwable, statusCode);
+        } catch (Throwable t) {
+            if (isInfo) {
+                logger.info("Failed to servlet request event handle.", t);
+            }
+        }
+    }
+
+    private int getStatusCode(final HttpServletResponse response) {
+        try {
+            return response.getStatus();
+        } catch (Exception ignored) {
+        }
+        return 0;
     }
 }

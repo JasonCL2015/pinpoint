@@ -17,20 +17,26 @@
 package com.navercorp.pinpoint.io.request;
 
 import com.navercorp.pinpoint.io.header.Header;
+import com.navercorp.pinpoint.io.header.HeaderEntity;
 
 /**
  * @author Woonduk Kang(emeroad)
  */
 public class DefaultMessage<T> implements Message<T> {
     private final Header header;
+    private final HeaderEntity headerEntity;
     private final T data;
 
-    public DefaultMessage(Header header, T data) {
+    public DefaultMessage(Header header, HeaderEntity headerEntity, T data) {
         if (header == null) {
             throw new NullPointerException("header must not be null");
         }
+        if (headerEntity == null) {
+            throw new NullPointerException("headerEntity must not be null");
+        }
 
         this.header = header;
+        this.headerEntity = headerEntity;
         this.data = data;
     }
 
@@ -40,7 +46,21 @@ public class DefaultMessage<T> implements Message<T> {
     }
 
     @Override
+    public HeaderEntity getHeaderEntity() {
+        return headerEntity;
+    }
+
+    @Override
     public T getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultMessage{" +
+                "header=" + header +
+                ", headerEntity=" + headerEntity +
+                ", data=" + data +
+                '}';
     }
 }

@@ -16,7 +16,6 @@
 package com.navercorp.pinpoint.thrift.io;
 
 import com.navercorp.pinpoint.io.header.Header;
-import com.navercorp.pinpoint.io.header.HeaderDataGenerator;
 import com.navercorp.pinpoint.io.header.v1.HeaderV1;
 import com.navercorp.pinpoint.io.header.v2.HeaderV2;
 import com.navercorp.pinpoint.io.util.BodyFactory;
@@ -25,11 +24,11 @@ import com.navercorp.pinpoint.io.util.TypeLocator;
 import com.navercorp.pinpoint.io.util.TypeLocatorBuilder;
 import com.navercorp.pinpoint.thrift.dto.flink.TFAgentStatBatch;
 import org.apache.thrift.TBase;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author minwoo.jung
@@ -40,20 +39,13 @@ public class FlinkTBaseLocator {
     public static final short AGENT_STAT_BATCH = 1000;
 
     private final byte version;
-    private final HeaderDataGenerator headerDataGenerator;
-
     private final TypeLocator<TBase<?, ?>> typeLocator;
 
-    public FlinkTBaseLocator(byte version, HeaderDataGenerator headerDataGenerator) {
+    public FlinkTBaseLocator(byte version) {
         if (version != HeaderV1.VERSION && version != HeaderV2.VERSION) {
             throw new IllegalArgumentException(String.format("could not select match header version. : 0x%02X", version));
         }
         this.version = version;
-
-        if (headerDataGenerator == null) {
-            throw new NullPointerException("headerDataGenerator must not be null.");
-        }
-        this.headerDataGenerator = headerDataGenerator;
         this.typeLocator = newTypeLocator();
     }
 
@@ -74,31 +66,29 @@ public class FlinkTBaseLocator {
         return typeLocator;
     }
 
-
     public class FlinkHeaderFactory implements HeaderFactory {
         @Override
         public Header newHeader(short type) {
             return createHeader(type);
         }
-    };
 
-    private Header createHeader(short type) {
-        if (version == HeaderV1.VERSION) {
-            return createHeaderV1(type);
-        } else if (version == HeaderV2.VERSION) {
-            return createHeaderV2(type);
+        private Header createHeader(short type) {
+            if (version == HeaderV1.VERSION) {
+                return createHeaderV1(type);
+            } else if (version == HeaderV2.VERSION) {
+                return createHeaderV2(type);
+            }
+
+            throw new IllegalArgumentException("unsupported Header version : " + version);
         }
 
-        throw new IllegalArgumentException("unsupported Header version : " + version);
-    }
+        private Header createHeaderV1(short type) {
+            return new HeaderV1(type);
+        }
 
-    private Header createHeaderV1(short type) {
-        return new HeaderV1(type);
-    }
-
-    private Header createHeaderV2(short type) {
-        Map<String, String> data = headerDataGenerator.generate();
-        return new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, type, data);
-    }
+        private Header createHeaderV2(short type) {
+            return new HeaderV2(Header.SIGNATURE, HeaderV2.VERSION, type);
+        }
+    };
 
 }
