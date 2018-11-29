@@ -46,7 +46,7 @@
         <module>dbcp</module>
         <module>dbcp2</module>
         <module>hikaricp</module>
-        <module>oracle-jdbc</module>
+        <!--<module>oracle-jdbc</module>-->
         <module>jdk-http</module>
         <module>json-lib</module>
         <module>redis</module>
@@ -57,7 +57,7 @@
         <module>google-httpclient</module>
         <module>grpc</module>
         <module>jetty</module>
-        <module>websphere</module>
+        <!--<module>websphere</module>-->
         <module>spring</module>
         <module>spring-boot</module>
         <module>ibatis</module>
@@ -67,17 +67,17 @@
         <module>logback</module>
         <module>dubbo</module>
         <module>cassandra</module>
-        <module>activemq-client</module>
+        <!--<module>activemq-client</module>-->
         <module>cxf</module>
         <module>hystrix</module>
-        <module>jboss</module>
+        <!--<module>jboss</module>-->
         <module>vertx</module>
         <module>resin</module>
         <module>jsp</module>
         <module>rxjava</module>
-        <module>rabbitmq</module>
-        <module>weblogic</module>
-        <module>php</module>
+        <!--<module>rabbitmq</module>-->
+        <!--<module>weblogic</module>-->
+        <!--<module>php</module>-->
         <module>akka-http</module>
         <module>undertow</module>
         <module>kafka</module>
@@ -85,9 +85,16 @@
         <module>fastjson</module>
         <module>druid</module>
         <module>hbase</module>
+        <module>rocketmq-client</module>
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>com.navercorp.pinpoint</groupId>
+            <artifactId>pinpoint-rocketmq-client-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-httpclient3-plugin</artifactId>
@@ -143,11 +150,11 @@
             <artifactId>pinpoint-jtds-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-oracle-jdbc-driver-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-oracle-jdbc-driver-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-commons-dbcp-plugin</artifactId>
@@ -223,11 +230,11 @@
             <artifactId>pinpoint-jetty-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-websphere-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-websphere-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-spring-plugin</artifactId>
@@ -268,11 +275,11 @@
             <artifactId>pinpoint-dubbo-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-activemq-client-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-activemq-client-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-cxf-plugin</artifactId>
@@ -283,11 +290,11 @@
             <artifactId>pinpoint-hystrix-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-jboss-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-jboss-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-vertx-plugin</artifactId>
@@ -308,21 +315,21 @@
             <artifactId>pinpoint-rxjava-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-rabbitmq-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-weblogic-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.navercorp.pinpoint</groupId>
-            <artifactId>pinpoint-php-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-rabbitmq-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-weblogic-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.navercorp.pinpoint</groupId>-->
+            <!--<artifactId>pinpoint-php-plugin</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>com.navercorp.pinpoint</groupId>
             <artifactId>pinpoint-akka-http-plugin</artifactId>
