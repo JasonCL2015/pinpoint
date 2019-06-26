@@ -1,0 +1,7 @@
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/interceptor/RocketMQMessageConsumeSendInterceptor.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/interceptor/RocketMQMessageProducerSendInterceptor.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/interceptor/RocketMQChannelInterceptor.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/interceptor/RocketMQConsumerEntryMethodDescriptor.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/RocketMQTraceMetadataProvider.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/RocketMQConstants.java
+/Users/cuiliang/Documents/gitrepostories/JASON/Mine/pinpoint/plugins/rocketmq-client/src/main/java/com/navercorp/pinpoint/plugin/rocketmq/client/RocketMQPlugin.java
